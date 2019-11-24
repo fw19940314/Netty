@@ -1,0 +1,5 @@
+ PERSONSET_PAIR_ASSIGNED(10),//人员pair赋值
+   PERSONSET_PAIR_WIPED_OFF(11),//人员pair擦除
+   ProcessInvokeDepthAop
+   BeforeSubProcessEvent
+   AfterSubProcessEvent

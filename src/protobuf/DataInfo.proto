@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+package com.elisland.protobuf;
+
+option optimize_for = SPEED; //文件属性
+option java_package = "com.elisland.protobuf";
+option java_outer_classname = "MessageData1";
+
+message MyMessage {
+    enum DataType {
+        DogType = 1;
+        CatType = 2;
+        PersonType = 3;
+    }
+    required DataType data_type = 1;
+    oneof dataBody {
+        Dog dog = 2;
+        Cat cat = 3;
+        Person person = 4;
+    }
+
+}
+
+message Dog {
+    optional int32 id = 1;
+    optional string name = 2;
+}
+
+message Cat {
+    optional int32 id = 1;
+    optional string name = 2;
+}
+
+message Person {
+    required string name = 1;
+    required int32 id = 2;
+    optional string email = 3;
+}
+
+message AddressBook {
+    repeated Person people = 1;
+}

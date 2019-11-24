@@ -1,0 +1,32 @@
+syntax = "proto2";
+
+package com.elisland.customprotocol;
+
+option optimize_for = SPEED; //文件属性
+option java_multiple_files = true;//生成多个文件
+option java_package = "com.elisland.customprotocol";
+option java_outer_classname = "CustomMessageData1";
+
+
+message MessageData {
+    required int64 length = 1;
+    optional Content content = 2;
+    enum DataType {
+        REQ_LOGIN = 0; //上线登录验证环节 等基础信息上报
+        RSP_LOGIN = 1; //返回上线登录状态与基础信息
+        PING = 2; //心跳
+        PONG = 3; //心跳
+        REQ_ACT = 4; //动作请求
+        RSP_ACT = 5; //动作响应
+        REQ_CMD = 6; //指令请求
+        RSP_CMD = 7; //指令响应
+        REQ_LOG = 8; //日志请求
+        RSP_LOG = 9; //日志响应
+    }
+    optional DataType order = 3;
+
+    message Content {
+        optional int64 contentLength = 1;
+        optional string data = 2;
+    }
+}

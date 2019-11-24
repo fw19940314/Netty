@@ -1,0 +1,209 @@
+syntax = "proto3";
+
+package com.elisland.uniubi;
+
+option optimize_for = SPEED; //文件属性
+option java_package = "com.elisland.uniubi";
+option java_outer_classname = "UniubiProtocol";
+
+message StationMessage {
+    MsgType type = 1;
+
+    ReqLogin req_login = 2;
+    RspLogin rsp_login = 3;
+
+    Ping ping = 4;
+    Pong pong = 5;
+
+    ReqAct req_act = 6;
+    RspAct rsp_act = 7;
+
+    ReqCmd req_cmd = 8;
+    RspCmd rsp_cmd = 9;
+
+    ReqLog req_log = 10;
+    RspLog rsp_log = 11;
+}
+
+enum MsgType {
+    REQ_LOGIN = 0;  //上线登录验证环节 等基础信息上报
+    RSP_LOGIN = 1;  //返回上线登录状态与基础信息
+    PING = 2;  //心跳
+    PONG = 3;  //心跳
+    REQ_ACT = 4;  //动作请求
+    RSP_ACT = 5;  //动作响应
+    REQ_CMD = 6;  //指令请求
+    RSP_CMD = 7;  //指令响应
+    REQ_LOG = 8 ;//日志请求
+    RSP_LOG = 9;  //日志响应
+}
+
+message ReqLogin {
+    string u_id = 1;  //全局ID
+    string version = 2;  //版本信息
+    uint32 type = 3 ;//类型
+    uint32 dev_type = 4 ;//设备类型
+    string dev_id = 5;  //设备标识
+    string model_id = 6;  //设备型号
+    string user_account = 7;  //用户全局账号
+    string product_key = 8;  //产品KEY
+    string product_secret = 9;  //产品秘钥
+    string access_key = 10; // accessKey
+    string sgin = 11 ; //验证信息
+    uint64 req_time = 12;  //动作时间
+}
+message RspLogin {
+    string u_id = 1;  //全局ID
+    uint32 result = 2; // 0:success
+    uint32 error_code = 3;  //错误码
+    string server_time = 4; // server utc time
+    string cloud_token = 5;  //平台TOKEN
+    uint32 cloud_devid = 6;  //平台设备ID
+    uint32 dev_status = 7; // 0:trial, 1:pay, 2:no service, 44:delete
+    bool   is_check_network = 8;  //是否检查网络
+    uint32 setting_status = 9; // 0:normal, 1:need update
+    uint32 heart_count = 10; // 3 times
+    uint32 ip_adders_span = 11; // 24h  hour
+    uint32 assign_ip_span = 12; // 15s  second
+    uint32 log_level = 13; // close--0，error--1，warn--2，info--3
+    string camera_conf = 14;
+    string region_conf = 15;
+}
+
+message Ping {
+    uint32 id = 1;
+}
+message Pong {
+    uint32 id = 1 ;
+}
+
+
+
+
+enum ActType {
+    DEV_INFOUP = 0;  //设备基础信息上报
+    DEV_INIT = 1;  //设备初始化
+    DEV_ADD = 2;  //设备添加
+    DEV_CHG = 3;  //设备更改 (预留)
+    DEV_CHK = 4;  //设备检查
+    DEV_DEL = 5;  //设备删除
+    STORAGE_CERTIFY = 6;  //OBS对象存储认证信息下发
+    STORAGE_PATH = 7;  //文件存储规则下发
+    FEATURE_ADD = 8;  //特征追加本地库添加
+    FEATURE_DEL = 9;  //特征追加本地库删除
+    PERSON_SYNC = 10;  //设备端人员基础信息同步
+    PERSON_DEL = 11;  //设备端人员基础信息删除
+    PERSON_UPDATE = 12;  //设备端人员基础信息更新
+    PERSON_GET = 13;  //获取云端人员信息
+    EVENT_UP = 14;  //设备端事件记录上报
+    CLOUD_JUDGE = 15;  //云端识别
+    IDENTIFY_REC = 16;  //识别记录
+}
+message ReqAct{
+    string  u_id = 1;  //全局ID
+    string  token = 2;
+    ActType type = 3;  //动作类型
+    map<string, MapVlaue> data_maps = 4;  //输入参数
+}
+message RspAct{
+    string  u_id = 1;  //全局ID
+    ActType type = 2;  //动作类型
+    uint32  result = 3; // 0:success
+    uint32  error_code = 4;  //错误码
+    string  server_time = 5; // server utc time
+    map<string, MapVlaue> data_maps= 6;  //输出参数
+}
+
+
+
+message MapVlaue{
+    string s_data = 1;
+    bytes  b_data = 2; //图片、视频等数据
+}
+
+
+
+
+
+enum CmdType {
+    RESTART = 0;  //重启
+    RESET = 1;  //重置
+    ENABLE = 2;  //设备启用   (预留)
+    DISABLE = 3;  //设备禁用  (预留)
+    //MSG = 4 ; //消息
+    //ACK = 5 ;  //确认
+}
+message ReqCmd{
+    string u_id = 1;  //全局ID
+    string token = 2;
+    CmdType type = 3 ; //信令类型
+    map<string, MapVlaue> data_maps = 4;  //如果有，输入参数
+}
+message RspCmd{
+    string u_id = 1;  //全局ID
+    uint32  result = 2; // 0:success
+    uint32  error_code = 3;  //错误码
+    CmdType type = 4; //信令类型
+    map<string, MapVlaue> data_maps = 5;  //如果失败，回复具体错误原因（代码）
+}
+
+
+
+
+
+
+
+
+message DevInfo {
+    enum OSTYPE {
+        ANDROID_OS = 0;
+        IOS_OS = 1;
+        WIN_PHONE_OS = 2;
+        SYMBIAN_OS = 3;
+        BLACKBERRY_OS = 4;
+        LINUX_OS = 5;
+        UNIX_OS = 6;
+        RTOS_OS = 7;
+        OTHER_OS = 8;
+    }
+    string dev_type = 1;
+    string ver = 2;
+    string imei = 3;
+    OSTYPE os_type = 4;
+    string os_ver = 5;
+    uint32 channel = 6;
+}
+message DevStatus {
+    enum StatusType {
+        //产生日志时  设备的运行状态
+        START   = 0;
+        LOGIN   = 1;
+        RUN     = 2;
+        OFFLINE = 3;
+        //...
+    }
+    StatusType type = 1;
+    map<string, MapVlaue> properties = 2;//存放具体日志信息
+}
+enum NetType {
+    OTHER = 0;
+    WIFI = 1;
+    G2 = 2;
+    G3 = 3;
+    G4 = 4;
+    G5 = 5;
+}
+message ReqLog {
+    string   u_id = 1;  //全局ID
+    string   token = 2;
+    string   dev_number = 3;
+    DevInfo  dev_info = 4;
+    repeated DevStatus dev_status = 5;
+    NetType  network = 6;
+    uint64   time = 7;
+}
+message RspLog {
+    string  u_id = 1;
+    uint32  result = 2;  // 0:success
+    uint32  error_code = 3;  //错误码
+}
